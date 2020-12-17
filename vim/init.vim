@@ -55,6 +55,7 @@ set updatetime=300
 
 " Startify settings
 let g:startify_lists = [
+      \ { 'type': 'sessions' },
       \ { 'type': 'bookmarks' },
       \ { 'type': 'files', 'header': ['   MRU:'] },
       \ ]
@@ -66,6 +67,10 @@ let g:startify_bookmarks = [
 
 " Don't save hidden and unloaded buffers in sessions.
 set sessionoptions-=buffers
+" Sessions directory
+let g:session_directory = "c:/Files/Configs/vim/sessions"
+let g:startify_session_dir = "c:/Files/Configs/vim/sessions"
+
 
 " ============================================================
 " EDITOR SETTINGS
