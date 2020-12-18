@@ -1,6 +1,6 @@
-" c:\Files\Configs\nvim\sessions\RateCalculator.vim:
+" c:\Files\Configs\nvim\sessions\Krastorio2.vim:
 " Vim session script.
-" Created by session.vim 2.13.1 on 18 December 2020 at 15:40:57.
+" Created by session.vim 2.13.1 on 18 December 2020 at 11:00:01.
 " Open this file in Vim and run :source % to restore your session.
 
 if exists('g:syntax_on') != 1 | syntax on | endif
@@ -11,23 +11,21 @@ if &background != 'dark'
 	set background=dark
 endif
 if !exists('g:colors_name') || g:colors_name != 'onedark' | colorscheme onedark | endif
-call setqflist([{'lnum': 13, 'col': 7, 'pattern': '', 'valid': 1, 'vcol': 0, 'nr': 0, 'type': '', 'module': '', 'filename': 'src\control.lua', 'text': 'local player_foo = require("scripts.player-data")'}, {'lnum': 41, 'col': 5, 'pattern': '', 'valid': 1, 'vcol': 0, 'nr': 0, 'type': '', 'module': '', 'filename': 'src\control.lua', 'text': '    player_foo.init(i)'}, {'lnum': 42, 'col': 5, 'pattern': '', 'valid': 1, 'vcol': 0, 'nr': 0, 'type': '', 'module': '', 'filename': 'src\control.lua', 'text': '    player_foo.refresh(player, global.players[i])'}, {'lnum': 62, 'col': 7, 'pattern': '', 'valid': 1, 'vcol': 0, 'nr': 0, 'type': '', 'module': '', 'filename': 'src\control.lua', 'text': '      player_foo.refresh(player, player_table)'}, {'lnum': 115, 'col': 3, 'pattern': '', 'valid': 1, 'vcol': 0, 'nr': 0, 'type': '', 'module': '', 'filename': 'src\control.lua', 'text': '  player_foo.init(e.player_index)'}, {'lnum': 116, 'col': 3, 'pattern': '', 'valid': 1, 'vcol': 0, 'nr': 0, 'type': '', 'module': '', 'filename': 'src\control.lua', 'text': '  player_foo.refresh(player, global.players[e.player_index])'}])
+call setqflist([])
 let SessionLoad = 1
 let s:so_save = &g:so | let s:siso_save = &g:siso | setg so=0 siso=0 | setl so=-1 siso=-1
 let v:this_session=expand("<sfile>:p")
 silent only
-cd c:/Files/Configs
+cd c:/Files/Development/Factorio/Mods/Krastorio2
 if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +1 nvim/init.vim
+badd +62 prototypes/entities/buildings/crusher.lua
 argglobal
 %argdel
-edit nvim/init.vim
+edit prototypes/entities/buildings/crusher.lua
 set splitbelow splitright
-set nosplitbelow
-set nosplitright
 wincmd t
 set winminheight=0
 set winheight=1
@@ -43,12 +41,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 141 - ((54 * winheight(0) + 44) / 88)
+let s:l = 62 - ((61 * winheight(0) + 44) / 88)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-141
-normal! 0
+62
+normal! 013|
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
 "   silent exe 'bwipe ' . s:wipebuf

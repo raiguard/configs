@@ -1,6 +1,6 @@
 " c:\Files\Configs\nvim\sessions\Tapeline.vim:
 " Vim session script.
-" Created by session.vim 2.13.1 on 17 December 2020 at 22:51:33.
+" Created by session.vim 2.13.1 on 17 December 2020 at 22:59:17.
 " Open this file in Vim and run :source % to restore your session.
 
 if exists('g:syntax_on') != 1 | syntax on | endif
@@ -11,7 +11,7 @@ if &background != 'dark'
 	set background=dark
 endif
 if !exists('g:colors_name') || g:colors_name != 'onedark' | colorscheme onedark | endif
-call setqflist([])
+call setqflist([{'lnum': 0, 'col': 0, 'pattern': '', 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'module': '', 'filename': '', 'text': 'To https://github.com/raiguard/configs'}, {'lnum': 0, 'col': 0, 'pattern': '', 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'module': '', 'filename': '', 'text': '   89753c9..e86d37b  master -> master'}])
 let SessionLoad = 1
 let s:so_save = &g:so | let s:siso_save = &g:siso | setg so=0 siso=0 | setl so=-1 siso=-1
 let v:this_session=expand("<sfile>:p")
@@ -21,7 +21,7 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +213 src/scripts/tape.lua
+badd +92 src/scripts/tape.lua
 argglobal
 %argdel
 edit src/scripts/tape.lua
@@ -41,11 +41,11 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 102 - ((63 * winheight(0) + 44) / 88)
+let s:l = 92 - ((53 * winheight(0) + 44) / 88)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-102
+92
 normal! 0
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'

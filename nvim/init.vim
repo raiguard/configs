@@ -22,6 +22,7 @@ Plug 'mhinz/vim-startify'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
+Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-vinegar'
 Plug 'xolox/vim-misc' " Needed for vim-session
 Plug 'xolox/vim-session'
@@ -114,6 +115,33 @@ let g:indent_guides_auto_colors = 0
 autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=#1d1f26   ctermbg=3
 autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=#272933 ctermbg=4
 
+" Auto-strip trailing whitespace
+" function! <SID>StripTrailingWhitespaces()
+"     let l = line(".")
+"     let c = col(".")
+"     %s/\s\+$//e
+"     call cursor(l, c)
+" endfun
+" autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
+
+" FZF delete buffers command
+function! s:list_buffers()
+  redir => list
+  silent ls
+  redir END
+  return split(list, "\n")
+endfunction
+
+function! s:delete_buffers(lines)
+  execute 'bwipeout' join(map(a:lines, {_, line -> split(line)[0]}))
+endfunction
+
+command! BD call fzf#run(fzf#wrap({
+  \ 'source': s:list_buffers(),
+  \ 'sink*': { lines -> s:delete_buffers(lines) },
+  \ 'options': '--multi --reverse --bind ctrl-a:select-all+accept'
+\ }))
+
 " ============================================================
 " KEYBOARD SETTINGS
 
@@ -134,6 +162,7 @@ inoremap <silent><expr> <c-.> coc#refresh()
 set expandtab
 set shiftwidth=2
 set softtabstop=2
+set tabstop=2
 
 " Better navigation hotkeys
 noremap <C-h> <C-w>h
@@ -207,8 +236,10 @@ nmap <leader>rn <Plug>(coc-rename)
 nnoremap <leader>prw :CocSearch <c-r>=expand("<cword>")<cr><cr>
 
 " FZF shortcuts
+nnoremap <leader>b :Buffers<cr>
 nnoremap <leader>f :Files<cr>
 nnoremap <leader>rg :Rg<cr>
+nnoremap <leader>d :BD<cr>
 
 " WhichKey
 set timeoutlen=250
