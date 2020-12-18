@@ -61,16 +61,15 @@ let g:startify_lists = [
       \ ]
 let g:startify_bookmarks = [
       \ {'a': 'c:/Files/Development'},
-      \ {'y': 'c:/Users/Caleb/AppData/Roaming/alacritty/alacritty.yml'},
-      \ {'z': 'c:/Users/Caleb/AppData/Local/nvim'},
+      \ {'f': 'c:/Files/Development/Factorio/Mods'},
+      \ {'z': 'c:/Files/Configs'},
       \ ]
 
 " Don't save hidden and unloaded buffers in sessions.
 set sessionoptions-=buffers
 " Sessions directory
-let g:session_directory = "c:/Files/Configs/vim/sessions"
-let g:startify_session_dir = "c:/Files/Configs/vim/sessions"
-
+let g:session_directory = "c:/Files/Configs/nvim/sessions"
+let g:startify_session_dir = "c:/Files/Configs/nvim/sessions"
 
 " ============================================================
 " EDITOR SETTINGS
@@ -79,6 +78,10 @@ let g:startify_session_dir = "c:/Files/Configs/vim/sessions"
 set number
 set relativenumber
 filetype plugin on
+
+" More natural splits
+set splitbelow
+set splitright
 
 " Color theme
 " if (has("autocmd"))
@@ -100,12 +103,17 @@ let g:lightline = {
 
 " GUI settings
 set noshowmode
+set colorcolumn=121
+" highlight ColorColumn
 
 " Enable indent guides by default
-let g:indent_guides_enable_on_vim_startup = 1
+if !exists('g:vscode')
+  let g:indent_guides_enable_on_vim_startup = 1
+endif
 let g:indent_guides_auto_colors = 0
 autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=#1d1f26   ctermbg=3
 autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=#272933 ctermbg=4
+
 " ============================================================
 " KEYBOARD SETTINGS
 
@@ -150,6 +158,11 @@ nnoremap <silent> N Nzz
 nnoremap <silent> * *zz
 nnoremap <silent> # #zz
 nnoremap <silent> g* g*zz
+" Movements centered please
+nnoremap <silent> <c-o> <c-o>zz
+nnoremap <silent> <c-i> <c-i>zz
+nnoremap <expr> ' "'" . nr2char(getchar()) . "zz"
+nnoremap <expr> ` "`" . nr2char(getchar()) . "zz"
 
 " Move by line
 nnoremap j gj
@@ -175,10 +188,6 @@ function! s:show_documentation()
   endif
 endfunction
 
-" Use <TAB> for selections ranges.
-nmap <silent> <TAB> <Plug>(coc-range-select)
-xmap <silent> <TAB> <Plug>(coc-range-select)
-
 " Find symbol of current document.
 nnoremap <silent> \o  :<C-u>CocList outline<cr>
 
@@ -199,7 +208,7 @@ nnoremap <leader>prw :CocSearch <c-r>=expand("<cword>")<cr><cr>
 
 " FZF shortcuts
 nnoremap <leader>f :Files<cr>
-nnoremap <leader>rr :Rg<cr>
+nnoremap <leader>rg :Rg<cr>
 
 " WhichKey
 set timeoutlen=250
@@ -220,6 +229,21 @@ map F <Plug>Sneak_F
 map t <Plug>Sneak_t
 map T <Plug>Sneak_T
 
+" Fugitive stuff?
+nmap <leader>gh :diffget //3<cr>
+nmap <leader>gu :diffget //2<cr>
+nmap <leader>gs :G<cr>
+
+" Tabs and terminal
+nmap <leader>tn :tabnew<cr>
+nmap <leader>tt :tabnew<cr>:edit term://bash<cr>i
+nmap <leader>te :tabnew<cr>-
+nmap <leader>t1 :tabnew<cr>:Startify<cr>
+if has("nvim")
+  au TermOpen * tnoremap <Esc> <c-\><c-n>
+  au FileType fzf tunmap <Esc>
+endif
+
 " ============================================================
 " OTHER
 
@@ -231,4 +255,3 @@ require'nvim-treesitter.configs'.setup {
   textobjects = { enable = true },
 }
 EOF
-

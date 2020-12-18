@@ -1,6 +1,6 @@
-" ~\vimfiles\sessions\RateCalculator.vim:
+" c:\Files\Configs\nvim\sessions\EditorExtensions.vim:
 " Vim session script.
-" Created by session.vim 2.13.1 on 17 December 2020 at 13:19:31.
+" Created by session.vim 2.13.1 on 17 December 2020 at 21:54:30.
 " Open this file in Vim and run :source % to restore your session.
 
 if exists('g:syntax_on') != 1 | syntax on | endif
@@ -16,19 +16,16 @@ let SessionLoad = 1
 let s:so_save = &g:so | let s:siso_save = &g:siso | setg so=0 siso=0 | setl so=-1 siso=-1
 let v:this_session=expand("<sfile>:p")
 silent only
-cd c:/Files/Development/Factorio/Mods/RateCalculator
+cd c:/Files/Development/Factorio/Mods/EditorExtensions
 if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +1 session.vim
-badd +0 src/control.lua
+badd +1 src/scripts/entity/linked-belt.lua
 argglobal
 %argdel
-edit src/control.lua
+edit src/scripts/entity/linked-belt.lua
 set splitbelow splitright
-set nosplitbelow
-set nosplitright
 wincmd t
 set winminheight=0
 set winheight=1
@@ -44,13 +41,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 44) / 88)
+let s:l = 27 - ((26 * winheight(0) + 44) / 88)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
+27
 normal! 0
-lcd c:/Files/Development/Factorio/Mods/RateCalculator/src
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
 "   silent exe 'bwipe ' . s:wipebuf

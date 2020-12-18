@@ -1,0 +1,123 @@
+window:
+  startup_mode: "Maximized"
+  dynamic_title: false
+  decorations: "none"
+
+# Font configuration (changes require restart)
+font:
+  # The normal (roman) font face to use.
+  # Style can be specified to pick a specific face.
+  normal:
+    family: "Fira Code"
+    style: "Medium"
+
+  # The bold font face
+  bold:
+    family: "Fira Code"
+
+  # The italic font face
+  italic:
+    family: "Fira Code"
+
+  # Point size of the font
+  size: 10
+
+  # Offset is the extra space around each character. offset.y can be thought of
+  # as modifying the linespacing, and offset.x as modifying the letter spacing.
+  offset:
+    x: 0
+    y: 0
+
+  # Glyph offset determines the locations of the glyphs within their cells with
+  # the default being at the bottom. Increase the x offset to move the glyph to
+  # the right, increase the y offset to move the glyph upward.
+  glyph_offset:
+    x: 0
+    y: 0
+
+  # Thin stroke font rendering (macOS only)
+  #
+  # Thin strokes are suitable for retina displays, but for non-retina you
+  # probably want this set to false.
+  #
+  # macOS >= 10.14.x:
+  #
+  # If the font quality on non-retina display looks bad then set
+  # `use_thin_strokes` to `true` and enable font smoothing by running the
+  # following command:
+  #   `defaults write -g CGFontRenderingFontSmoothingDisabled -bool NO`
+  #
+  # This is a global setting and will require a log out or restart to take
+  # effect.
+
+colors:
+  # Default colors
+  primary:
+    background: "#181A1F"
+    foreground: "0xabb2bf"
+
+    # Bright and dim foreground colors
+    #
+    # The dimmed foreground color is calculated automatically if it is not present.
+    # If the bright foreground color is not set, or `draw_bold_text_with_bright_colors`
+    # is `false`, the normal foreground color will be used.
+    #dim_foreground: '0x9a9a9a'
+    bright_foreground: "0xe6efff"
+
+  # Cursor colors
+  #
+  # Colors which should be used to draw the terminal cursor. If these are unset,
+  # the cursor color will be the inverse of the cell color.
+  #cursor:
+  #  text: '0x000000'
+  #  cursor: '0xffffff'
+
+  # Normal colors
+  normal:
+    black: "0x1e2127"
+    red: "0xe06c75"
+    green: "0x98c379"
+    yellow: "0xd19a66"
+    blue: "0x61afef"
+    magenta: "0xc678dd"
+    cyan: "0x56b6c2"
+    white: "0x828791"
+
+  # Bright colors
+  bright:
+    black: "0x5c6370"
+    red: "0xe06c75"
+    green: "0x98c379"
+    yellow: "0xd19a66"
+    blue: "0x61afef"
+    magenta: "0xc678dd"
+    cyan: "0x56b6c2"
+    white: "0xe6efff"
+
+  # Dim colors
+  #
+  # If the dim colors are not set, they will be calculated automatically based
+  # on the `normal` colors.
+  dim:
+    black: "0x1e2127"
+    red: "0xe06c75"
+    green: "0x98c379"
+    yellow: "0xd19a66"
+    blue: "0x61afef"
+    magenta: "0xc678dd"
+    cyan: "0x56b6c2"
+    white: "0x828791"
+
+  # Indexed Colors
+  #
+  # The indexed colors include all colors from 16 to 256.
+  # When these are not set, they're filled with sensible defaults.
+  #indexed_colors:
+  #  - { index: 16, color: '0x000000' }
+shell:
+  program: "c:/Program Files/Git/bin/bash.exe"
+
+working_directory: "c:/Files/Development"
+
+key_bindings:
+  - { key: N,        mods: Control|Shift,    action: SpawnNewInstance    }

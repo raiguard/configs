@@ -1,0 +1,40 @@
+{
+  "Lua.diagnostics.globals": [
+    "__DebugAdapter",
+    "__Profiler",
+    "bit32",
+    "commands",
+    "data",
+    "defines",
+    "game",
+    "global",
+    "localised_print",
+    "log",
+    "mods",
+    "on_error",
+    "rcon",
+    "remote",
+    "rendering",
+    "script",
+    "serpent",
+    "settings",
+    "table_size",
+    "REGISTER_ON_TICK"
+  ],
+  "Lua.workspace.library": {
+    "C:/Files/Development/Factorio/Mods/FLib": true,
+    "C:/Files/Development/Factorio/Testbenches/1/data/core/lualib": true,
+    "C:/Files/Development/Factorio/Testbenches/1/data/core/prototypes": true
+  },
+  "Lua.workspace.preloadFileSize": 10000,
+  "Lua.workspace.maxPreload": 1000,
+  "Lua.runtime.version": "Lua 5.2",
+  "Lua.workspace.ignoreSubmodules": false,
+  "Lua.diagnostics.severity": {
+    "unused-local": "Warning",
+    "undefined-global": "Error",
+    "redefined-local": "Hint"
+  },
+  "Lua.diagnostics.disable": ["lowercase-global"],
+  "Lua.workspace.ignoreDir": [".vscode", "src/archive"]
+}
