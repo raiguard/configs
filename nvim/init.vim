@@ -16,6 +16,7 @@ call plug#begin('~/AppData/Local/nvim/plugged')
 " Plug 'easymotion/vim-easymotion', Cond(!exists('g:vscode'))
 
 " Vim Enhancements
+Plug 'Raimondi/delimitMate'
 Plug 'christoomey/vim-sort-motion'
 Plug 'justinmk/vim-sneak'
 Plug 'mhinz/vim-startify'
@@ -274,6 +275,9 @@ if has("nvim")
   au TermOpen * tnoremap <Esc> <c-\><c-n>
   au FileType fzf tunmap <Esc>
 endif
+
+" <leader><leader> toggles betwen buffers
+nnoremap <leader><leader> <c-^>
 
 " ============================================================
 " OTHER
