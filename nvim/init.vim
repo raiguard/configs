@@ -11,22 +11,27 @@ endfunction
 " Load plugins
 call plug#begin('~/AppData/Local/nvim/plugged')
 
-" Use different easymotion plugins for actual vim and vscode
-" Plug 'asvetliakov/vim-easymotion', Cond(exists('g:vscode'), { 'as': 'vsc-easymotion' })
-" Plug 'easymotion/vim-easymotion', Cond(!exists('g:vscode'))
-
 " Vim Enhancements
 Plug 'Raimondi/delimitMate'
 Plug 'christoomey/vim-sort-motion'
+Plug 'idanarye/vim-merginal'
 Plug 'justinmk/vim-sneak'
+Plug 'kana/vim-textobj-entire'
+Plug 'kana/vim-textobj-user' " Required for textobj-entire
 Plug 'mhinz/vim-startify'
+Plug 'puremourning/vimspector'
+Plug 'rbong/vim-flog' " Requires fugitive
+Plug 'szw/vim-maximizer'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-vinegar'
-Plug 'xolox/vim-misc' " Needed for vim-session
-Plug 'xolox/vim-session'
+
+" Formatters
+Plug 'prettier/vim-prettier', {
+  \ 'do': 'npm install',
+  \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue', 'yaml', 'html'] }
 
 " GUI Enhancements
 Plug 'itchyny/lightline.vim'
@@ -41,6 +46,9 @@ Plug 'joshdick/onedark.vim'
 Plug 'airblade/vim-rooter'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
+" Plug 'nvim-lua/popup.nvim'
+" Plug 'nvim-lua/plenary.nvim'
+" Plug 'nvim-telescope/telescope.nvim'
 
 " Syntax highlighting
 Plug 'nvim-treesitter/nvim-treesitter', { 'commit': '3c07232' }
@@ -57,7 +65,6 @@ set updatetime=300
 
 " Startify settings
 let g:startify_lists = [
-      \ { 'type': 'sessions' },
       \ { 'type': 'bookmarks' },
       \ { 'type': 'files', 'header': ['   MRU:'] },
       \ ]
@@ -67,14 +74,107 @@ let g:startify_bookmarks = [
       \ {'z': 'c:/Files/Configs'},
       \ ]
 
-" Don't save hidden and unloaded buffers in sessions.
-set sessionoptions-=buffers
-" Sessions directory
-let g:session_directory = "c:/Files/Configs/nvim/sessions"
-let g:startify_session_dir = "c:/Files/Configs/nvim/sessions"
+" Python directory
+let g:python3_host_prog = "c:/Files/Development/Python/.python/python.exe"
+
+let g:lightline = {
+      \ 'colorscheme': 'onedark',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'gitbranch': 'FugitiveHead'
+      \ },
+      \ }
+
+" Sneak
+let g:sneak#label = 1
+
+" Telescope
+" :lua <<EOF
+" require("telescope").setup{
+"   defaults = {
+"     vimgrep_arguments = {
+"       'rg',
+"       '--color=never',
+"       '--no-heading',
+"       '--with-filename',
+"       '--line-number',
+"       '--column',
+"       '--smart-case'
+"     },
+"     prompt_position = "bottom",
+"     prompt_prefix = ">",
+"     selection_strategy = "reset",
+"     sorting_strategy = "descending",
+"     layout_strategy = "horizontal",
+"     layout_defaults = {
+"       -- TODO add builtin options.
+"     },
+"     file_sorter =  require'telescope.sorters'.get_fuzzy_file,
+"     file_ignore_patterns = {},
+"     generic_sorter =  require'telescope.sorters'.get_generic_fuzzy_sorter,
+"     shorten_path = true,
+"     winblend = 0,
+"     width = 0.75,
+"     preview_cutoff = 120,
+"     results_height = 1,
+"     results_width = 0.8,
+"     border = {},
+"     borderchars = { '─', '│', '─', '│', '╭', '╮', '╯', '╰'},
+"     color_devicons = true,
+"     use_less = true,
+"     set_env = { ['COLORTERM'] = 'truecolor' }, -- default { }, currently unsupported for shells like cmd.exe / powershell.exe
+"     file_previewer = require'telescope.previewers'.cat.new, -- For buffer previewer use `require'telescope.previewers'.vim_buffer_cat.new`
+"     grep_previewer = require'telescope.previewers'.vimgrep.new, -- For buffer previewer use `require'telescope.previewers'.vim_buffer_vimgrep.new`
+"     qflist_previewer = require'telescope.previewers'.qflist.new, -- For buffer previewer use `require'telescope.previewers'.vim_buffer_qflist.new`
+"   }
+" } 
+" EOF
 
 " ============================================================
 " EDITOR SETTINGS
+
+" Tab row
+function! MyTabLine()
+  let s = ''
+  for i in range(tabpagenr('$'))
+    " select the highlighting
+    if i + 1 == tabpagenr()
+      let s .= '%#TabLineSel#'
+    else
+      let s .= '%#TabLine#'
+    endif
+
+    " set the tab page number (for mouse clicks)
+    let s .= '%' . (i + 5) . 'T'
+
+    " the label is made by MyTabLabel()
+    let s .= ' %{MyTabLabel(' . (i + 1) . ')} '
+  endfor
+
+  " after the last tab fill with TabLineFill and reset tab page nr
+  let s .= '%#TabLineFill#%T'
+
+  return s
+endfunction
+
+function! MyTabLabel(n)
+  let buflist = tabpagebuflist(a:n)
+  let winnr = tabpagewinnr(a:n)
+  return bufname(buflist[winnr - 1])
+endfunction
+
+set tabline=%!MyTabLine()
+
+" Spaces > tabs
+set expandtab
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
+set smartindent
+set autoindent
 
 " Line numbers
 set number
@@ -86,27 +186,15 @@ set splitbelow
 set splitright
 
 " Color theme
-" if (has("autocmd"))
-"   augroup colorextend
-"     autocmd!
-"     " Override background color
-"     let s:background = { "gui": "0x14151a", "cterm": "235", "cterm16": "0" }
-"     autocmd ColorScheme * call onedark#set_highlight("Normal", { "bg": s:background }) "No `fg` setting
-" endif
 autocmd ColorScheme * highlight Normal ctermbg=NONE guibg=NONE
 set termguicolors
 " Color theme
 syntax on
 colorscheme onedark
 set background=dark
-let g:lightline = {
-      \  'colorscheme': 'onedark',
-      \ }
 
 " GUI settings
 set noshowmode
-set colorcolumn=121
-" highlight ColorColumn
 
 " Enable indent guides by default
 if !exists('g:vscode')
@@ -158,12 +246,6 @@ vnoremap K :m '<-2<CR>gv=gv
 
 " Use <c-.> to trigger completion.
 inoremap <silent><expr> <c-.> coc#refresh()
-
-" Spaces > tabs
-set expandtab
-set shiftwidth=2
-set softtabstop=2
-set tabstop=2
 
 " Better navigation hotkeys
 noremap <C-h> <C-w>h
@@ -237,10 +319,15 @@ nmap <leader>rn <Plug>(coc-rename)
 nnoremap <leader>prw :CocSearch <c-r>=expand("<cword>")<cr><cr>
 
 " FZF shortcuts
-nnoremap <leader>b :Buffers<cr>
-nnoremap <leader>f :Files<cr>
-nnoremap <leader>rg :Rg<cr>
-nnoremap <leader>d :BD<cr>
+nnoremap <leader>fb :Buffers<cr>
+nnoremap <leader>ff :Files<cr>
+nnoremap <leader>fg :Rg<cr>
+nnoremap <leader>fd :BD<cr>
+
+" " Telescope shortcuts
+" nnoremap <leader>ff :Telescope find_files<cr>
+" nnoremap <leader>fb :Telescope buffers<cr>
+" nnoremap <leader>fg :Telescope live_grep<cr>
 
 " WhichKey
 set timeoutlen=250
@@ -261,16 +348,30 @@ map F <Plug>Sneak_F
 map t <Plug>Sneak_t
 map T <Plug>Sneak_T
 
-" Fugitive stuff?
-nmap <leader>gh :diffget //3<cr>
-nmap <leader>gu :diffget //2<cr>
+" Git (fugitive, merginal, Flog
 nmap <leader>gs :G<cr>
+nmap <leader>gb :Merginal<cr>
+nmap <leader>gg :Flog<cr>
+nmap <leader>gc :Gcommit<cr>:sleep 200m<cr><cr>
+nmap <leader>gp :Gpush<cr>
+
+" Avoid `press enter to continue` when comitting from GS
+function! s:ftplugin_fugitive() abort
+  nnoremap <buffer> <silent> cc :Git commit --quiet<CR>
+  nnoremap <buffer> <silent> ca :Git commit --quiet --amend<CR>
+  nnoremap <buffer> <silent> ce :Git commit --quiet --amend --no-edit<CR>
+endfunction
+augroup nhooyr_fugitive
+  autocmd!
+  autocmd FileType fugitive call s:ftplugin_fugitive()
+augroup END
 
 " Tabs and terminal
 nmap <leader>tn :tabnew<cr>
 nmap <leader>tt :tabnew<cr>:edit term://bash<cr>i
 nmap <leader>te :tabnew<cr>-
 nmap <leader>t1 :tabnew<cr>:Startify<cr>
+nmap <leader>tc :tabclose<cr>
 if has("nvim")
   au TermOpen * tnoremap <Esc> <c-\><c-n>
   au FileType fzf tunmap <Esc>
@@ -278,6 +379,34 @@ endif
 
 " <leader><leader> toggles betwen buffers
 nnoremap <leader><leader> <c-^>
+
+" Vimspector
+fun! GotoWindow(id)
+  call win_gotoid(a:id)
+  " MaximizerToggle
+endfun
+nnoremap <leader>dd :call vimspector#Launch()<cr>
+nnoremap <leader>dc :call GotoWindow(g:vimspector_session_windows.code)<cr>
+nnoremap <leader>dt :call GotoWindow(g:vimspector_session_windows.tagpage)<cr>
+nnoremap <leader>dv :call GotoWindow(g:vimspector_session_windows.variables)<cr>
+nnoremap <leader>dw :call GotoWindow(g:vimspector_session_windows.watches)<cr>
+nnoremap <leader>ds :call GotoWindow(g:vimspector_session_windows.stack_trace)<cr>
+nnoremap <leader>do :call GotoWindow(g:vimspector_session_windows.output)<cr>
+nnoremap <leader>de :call vimspector#Reset()<cr>
+
+nmap <leader>dl <Plug>VimspectorStepInto
+nmap <leader>dj <Plug>VimspectorStepOver
+nmap <leader>dk <Plug>VimspectorStepOut
+nmap <leader>d_ <Plug>VimspectorRestart
+nnoremap <leader>d<space> :call vimspector#Continue()<cr>
+
+nmap <leader>drc <Plug>VimspectorRunToCursor
+nmap <leader>dbb <Plug>VimspectorToggleBreakpoint
+nmap <leader>dbc <Plug>VimspectorToggleConditionalBreakpoint
+nmap <leader>dbl <Plug>VimspectorToggleLogpoint
+
+" Maximizer
+nnoremap <leader>m :MaximizerToggle!<cr>
 
 " ============================================================
 " OTHER
