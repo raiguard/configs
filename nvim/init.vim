@@ -74,7 +74,7 @@ let g:startify_bookmarks = [
       \ ]
 
 " Python directory
-let g:python3_host_prog = "c:/Files/Development/Python/.python/python.exe"
+let g:python3_host_prog = "c:/Files/Programs/Python/python.exe"
 
 let g:lightline = {
       \ 'colorscheme': 'onedark',
