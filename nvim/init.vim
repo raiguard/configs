@@ -1,12 +1,9 @@
 let mapleader = "\<Space>"
 
+set colorcolumn=121
+
 " ============================================================
 " PLUGINS
-
-function! Cond(Cond, ...)
-  let opts = get(a:000, 0, {})
-  return a:Cond ? opts : extend(opts, { 'on': [], 'for': [] })
-endfunction
 
 " Load plugins
 call plug#begin('~/AppData/Local/nvim/plugged')
@@ -18,12 +15,14 @@ Plug 'idanarye/vim-merginal'
 Plug 'justinmk/vim-sneak'
 Plug 'kana/vim-textobj-entire'
 Plug 'kana/vim-textobj-user' " Required for textobj-entire
+Plug 'lambdalisue/fern.vim'
 Plug 'mhinz/vim-startify'
 Plug 'puremourning/vimspector'
 Plug 'rbong/vim-flog' " Requires fugitive
 Plug 'szw/vim-maximizer'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-sleuth'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-vinegar'
@@ -130,11 +129,15 @@ let g:sneak#label = 1
 "     grep_previewer = require'telescope.previewers'.vimgrep.new, -- For buffer previewer use `require'telescope.previewers'.vim_buffer_vimgrep.new`
 "     qflist_previewer = require'telescope.previewers'.qflist.new, -- For buffer previewer use `require'telescope.previewers'.vim_buffer_qflist.new`
 "   }
-" } 
+" }
 " EOF
 
 " ============================================================
 " EDITOR SETTINGS
+
+" Allow per-project settings
+set exrc
+set secure
 
 " Tab row
 function! MyTabLine()
@@ -167,14 +170,6 @@ function! MyTabLabel(n)
 endfunction
 
 set tabline=%!MyTabLine()
-
-" Spaces > tabs
-set expandtab
-set tabstop=2
-set shiftwidth=2
-set softtabstop=2
-set smartindent
-set autoindent
 
 " Line numbers
 set number
@@ -230,6 +225,20 @@ command! BD call fzf#run(fzf#wrap({
   \ 'sink*': { lines -> s:delete_buffers(lines) },
   \ 'options': '--multi --reverse --bind ctrl-a:select-all+accept'
 \ }))
+
+" Strip trailing whitespace on save
+autocmd BufWritePre * :%s/\s\+$//e
+
+" Spaces > tabs
+if get(g:, '_has_set_default_indent_settings', 0) == 0
+  set expandtab
+  set tabstop=2
+  set shiftwidth=2
+  set softtabstop=2
+  set smartindent
+  set autoindent
+  let g:_has_set_default_indent_settings = 1
+endif
 
 " ============================================================
 " KEYBOARD SETTINGS
@@ -332,11 +341,12 @@ nnoremap <leader>fd :BD<cr>
 " WhichKey
 set timeoutlen=250
 nnoremap <silent> <leader> :WhichKey ' '<CR>
+" nnoremap <silent> g :WhichKey 'g'<cr>
 
 " Startify shortcut
 nnoremap <leader>1 :Startify<cr>
 
-" Switch splits with ctrl-movement
+"onedarkonedark Switch splits with ctrl-movement
 nnoremap <c-h> <c-w>h
 nnoremap <c-j> <c-w>j
 nnoremap <c-k> <c-w>k
@@ -407,6 +417,12 @@ nmap <leader>dbl <Plug>VimspectorToggleLogpoint
 
 " Maximizer
 nnoremap <leader>m :MaximizerToggle!<cr>
+
+" Open new empty buffer
+nnoremap <leader>n :enew<cr>
+
+" fern
+" nnoremap - :Fern .<cr>
 
 " ============================================================
 " OTHER
