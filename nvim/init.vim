@@ -1,7 +1,5 @@
 let mapleader = "\<Space>"
 
-set colorcolumn=121
-
 " ============================================================
 " PLUGINS
 
@@ -16,6 +14,7 @@ Plug 'justinmk/vim-sneak'
 Plug 'kana/vim-textobj-entire'
 Plug 'kana/vim-textobj-user' " Required for textobj-entire
 Plug 'lambdalisue/fern.vim'
+Plug 'luochen1990/rainbow'
 Plug 'mhinz/vim-startify'
 Plug 'puremourning/vimspector'
 Plug 'rbong/vim-flog' " Requires fugitive
@@ -45,9 +44,10 @@ Plug 'joshdick/onedark.vim'
 Plug 'airblade/vim-rooter'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-" Plug 'nvim-lua/popup.nvim'
-" Plug 'nvim-lua/plenary.nvim'
-" Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope-fzy-native.nvim'
 
 " Syntax highlighting
 Plug 'nvim-treesitter/nvim-treesitter', { 'commit': '3c07232' }
@@ -91,46 +91,15 @@ let g:lightline = {
 let g:sneak#label = 1
 
 " Telescope
-" :lua <<EOF
-" require("telescope").setup{
-"   defaults = {
-"     vimgrep_arguments = {
-"       'rg',
-"       '--color=never',
-"       '--no-heading',
-"       '--with-filename',
-"       '--line-number',
-"       '--column',
-"       '--smart-case'
-"     },
-"     prompt_position = "bottom",
-"     prompt_prefix = ">",
-"     selection_strategy = "reset",
-"     sorting_strategy = "descending",
-"     layout_strategy = "horizontal",
-"     layout_defaults = {
-"       -- TODO add builtin options.
-"     },
-"     file_sorter =  require'telescope.sorters'.get_fuzzy_file,
-"     file_ignore_patterns = {},
-"     generic_sorter =  require'telescope.sorters'.get_generic_fuzzy_sorter,
-"     shorten_path = true,
-"     winblend = 0,
-"     width = 0.75,
-"     preview_cutoff = 120,
-"     results_height = 1,
-"     results_width = 0.8,
-"     border = {},
-"     borderchars = { '─', '│', '─', '│', '╭', '╮', '╯', '╰'},
-"     color_devicons = true,
-"     use_less = true,
-"     set_env = { ['COLORTERM'] = 'truecolor' }, -- default { }, currently unsupported for shells like cmd.exe / powershell.exe
-"     file_previewer = require'telescope.previewers'.cat.new, -- For buffer previewer use `require'telescope.previewers'.vim_buffer_cat.new`
-"     grep_previewer = require'telescope.previewers'.vimgrep.new, -- For buffer previewer use `require'telescope.previewers'.vim_buffer_vimgrep.new`
-"     qflist_previewer = require'telescope.previewers'.qflist.new, -- For buffer previewer use `require'telescope.previewers'.vim_buffer_qflist.new`
-"   }
-" }
-" EOF
+:lua <<EOF
+require("telescope").setup{
+  defaults = {
+    file_previewer = require'telescope.previewers'.cat.new, -- For buffer previewer use `require'telescope.previewers'.vim_buffer_cat.new`
+    grep_previewer = require'telescope.previewers'.vimgrep.new, -- For buffer previewer use `require'telescope.previewers'.vim_buffer_vimgrep.new`
+    qflist_previewer = require'telescope.previewers'.qflist.new, -- For buffer previewer use `require'telescope.previewers'.vim_buffer_qflist.new`
+  }
+}
+EOF
 
 " ============================================================
 " EDITOR SETTINGS
@@ -181,7 +150,18 @@ set splitbelow
 set splitright
 
 " Color theme
-autocmd ColorScheme * highlight Normal ctermbg=NONE guibg=NONE
+if (has("autocmd"))
+  let s:colors = onedark#GetColors()
+  augroup colorextend
+    autocmd!
+    autocmd ColorScheme * highlight Normal ctermbg=NONE guibg=NONE
+    autocmd Colorscheme * call onedark#set_highlight("Keyword", {"fg": s:colors.purple})
+    autocmd Colorscheme * call onedark#set_highlight("Operator", {"fg": s:colors.red})
+    autocmd Colorscheme * call onedark#set_highlight("Include", {"fg": s:colors.yellow})
+    autocmd Colorscheme * call onedark#set_highlight("Character", {"fg": s:colors.cyan})
+    autocmd Colorscheme * call onedark#set_highlight("Identifier", {"fg":  s:colors.white})
+  augroup END
+endif
 set termguicolors
 " Color theme
 syntax on
@@ -190,6 +170,15 @@ set background=dark
 
 " GUI settings
 set noshowmode
+let g:rainbow_active = 1
+let g:rainbow_conf = {
+\	'guifgs': ['gold', 'orchid', 'lightskyblue'],
+\}
+
+" Color columns
+augroup lua
+  autocmd FileType lua setlocal colorcolumn=121
+augroup END
 
 " Enable indent guides by default
 if !exists('g:vscode')
@@ -200,34 +189,31 @@ autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=#1d1f26   ctermbg=3
 autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=#272933 ctermbg=4
 
 " Auto-strip trailing whitespace
-" function! <SID>StripTrailingWhitespaces()
-"     let l = line(".")
-"     let c = col(".")
-"     %s/\s\+$//e
-"     call cursor(l, c)
-" endfun
-" autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
+function! <SID>StripTrailingWhitespaces()
+    let l = line(".")
+    let c = col(".")
+    %s/\s\+$//e
+    call cursor(l, c)
+endfun
+autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
 
 " FZF delete buffers command
-function! s:list_buffers()
-  redir => list
-  silent ls
-  redir END
-  return split(list, "\n")
-endfunction
+" function! s:list_buffers()
+"   redir => list
+"   silent ls
+"   redir END
+"   return split(list, "\n")
+" endfunction
 
-function! s:delete_buffers(lines)
-  execute 'bwipeout' join(map(a:lines, {_, line -> split(line)[0]}))
-endfunction
+" function! s:delete_buffers(lines)
+"   execute 'bwipeout' join(map(a:lines, {_, line -> split(line)[0]}))
+" endfunction
 
-command! BD call fzf#run(fzf#wrap({
-  \ 'source': s:list_buffers(),
-  \ 'sink*': { lines -> s:delete_buffers(lines) },
-  \ 'options': '--multi --reverse --bind ctrl-a:select-all+accept'
-\ }))
-
-" Strip trailing whitespace on save
-autocmd BufWritePre * :%s/\s\+$//e
+" command! BD call fzf#run(fzf#wrap({
+"   \ 'source': s:list_buffers(),
+"   \ 'sink*': { lines -> s:delete_buffers(lines) },
+"   \ 'options': '--multi --reverse --bind ctrl-a:select-all+accept'
+" \ }))
 
 " Spaces > tabs
 if get(g:, '_has_set_default_indent_settings', 0) == 0
@@ -239,6 +225,10 @@ if get(g:, '_has_set_default_indent_settings', 0) == 0
   set autoindent
   let g:_has_set_default_indent_settings = 1
 endif
+
+" Use treesitter for folding
+" set foldmethod=expr
+" set foldexpr=nvim_treesitter#foldexpr()
 
 " ============================================================
 " KEYBOARD SETTINGS
@@ -328,15 +318,15 @@ nmap <leader>rn <Plug>(coc-rename)
 nnoremap <leader>prw :CocSearch <c-r>=expand("<cword>")<cr><cr>
 
 " FZF shortcuts
-nnoremap <leader>fb :Buffers<cr>
-nnoremap <leader>ff :Files<cr>
-nnoremap <leader>fg :Rg<cr>
-nnoremap <leader>fd :BD<cr>
+" nnoremap <leader>fb :Buffers<cr>
+" nnoremap <leader>ff :Files<cr>
+" nnoremap <leader>fg :Rg<cr>
+" nnoremap <leader>fd :BD<cr>
 
 " " Telescope shortcuts
-" nnoremap <leader>ff :Telescope find_files<cr>
-" nnoremap <leader>fb :Telescope buffers<cr>
-" nnoremap <leader>fg :Telescope live_grep<cr>
+nnoremap <leader>ff :Telescope find_files<cr>
+nnoremap <leader>fb :Telescope buffers<cr>
+nnoremap <leader>fg :Telescope live_grep<cr>
 
 " WhichKey
 set timeoutlen=250
@@ -428,10 +418,19 @@ nnoremap <leader>n :enew<cr>
 " OTHER
 
 :lua <<EOF
-require'nvim-treesitter.configs'.setup {
+require('nvim-treesitter.configs').setup {
   -- Modules and its options go here
   highlight = { enable = true },
   incremental_selection = { enable = true },
   textobjects = { enable = true },
 }
+local previewers = require('telescope.previewers')
+require('telescope').setup {
+  defaults = {
+    file_previewer = require'telescope.previewers'.vim_buffer_cat.new,
+    grep_previewer = require'telescope.previewers'.vim_buffer_vimgrep.new,
+    qflist_previewer = require'telescope.previewers'.vim_buffer_qflist.new,
+  }
+}
+require('telescope').load_extension('fzy_native')
 EOF
