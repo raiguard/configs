@@ -36,5 +36,7 @@
     "redefined-local": "Hint"
   },
   "Lua.diagnostics.disable": ["lowercase-global"],
-  "Lua.workspace.ignoreDir": [".vscode", "src/archive"]
+  "Lua.workspace.ignoreDir": [".vscode", "src/archive"],
+  "coc.preferences.colorSupport": false,
+  "clangd.path": "C:\\Users\\Caleb\\AppData\\Local\\coc\\extensions\\coc-clangd-data\\install\\11.0.0\\clangd_11.0.0\\bin\\clangd.exe"
 }

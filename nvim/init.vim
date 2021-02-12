@@ -7,24 +7,26 @@ let mapleader = "\<Space>"
 call plug#begin('~/AppData/Local/nvim/plugged')
 
 " Vim Enhancements
-Plug 'Raimondi/delimitMate'
 Plug 'christoomey/vim-sort-motion'
-Plug 'idanarye/vim-merginal'
 Plug 'justinmk/vim-sneak'
 Plug 'kana/vim-textobj-entire'
 Plug 'kana/vim-textobj-user' " Required for textobj-entire
-Plug 'lambdalisue/fern.vim'
 Plug 'luochen1990/rainbow'
+Plug 'mbbill/undotree'
 Plug 'mhinz/vim-startify'
+Plug 'michaeljsmith/vim-indent-object'
 Plug 'puremourning/vimspector'
 Plug 'rbong/vim-flog' " Requires fugitive
+Plug 'severin-lemaignan/vim-minimap'
 Plug 'szw/vim-maximizer'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-sleuth'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-vinegar'
+" Plug 'vimwiki/vimwiki'
 
 " Formatters
 Plug 'prettier/vim-prettier', {
@@ -42,15 +44,16 @@ Plug 'joshdick/onedark.vim'
 
 " Fuzzy finder
 Plug 'airblade/vim-rooter'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
+" Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+" Plug 'junegunn/fzf.vim'
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzy-native.nvim'
 
 " Syntax highlighting
-Plug 'nvim-treesitter/nvim-treesitter', { 'commit': '3c07232' }
+Plug 'nvim-treesitter/nvim-treesitter' " , { 'commit': '3c07232' }
+Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 Plug 'nvim-treesitter/playground'
 
 " Language support
@@ -60,7 +63,10 @@ call plug#end()
 
 " Completion
 " You will have bad experience for diagnostic messages when it's default 4000.
-set updatetime=300
+set updatetime=50
+
+" coc-highlight
+autocmd CursorHold * silent call CocActionAsync('highlight')
 
 " Startify settings
 let g:startify_lists = [
@@ -101,49 +107,35 @@ require("telescope").setup{
 }
 EOF
 
+" Vimwiki
+let g:vimwiki_list = [{'path': 'c:/Files/Drive/vimwiki', 'syntax': 'markdown', 'ext': '.md'}]
+
 " ============================================================
 " EDITOR SETTINGS
+
+" NO SWAP FILES!!!
+set noswapfile
 
 " Allow per-project settings
 set exrc
 set secure
 
-" Tab row
-function! MyTabLine()
-  let s = ''
-  for i in range(tabpagenr('$'))
-    " select the highlighting
-    if i + 1 == tabpagenr()
-      let s .= '%#TabLineSel#'
-    else
-      let s .= '%#TabLine#'
-    endif
+" Keep old buffers open
+set hidden
 
-    " set the tab page number (for mouse clicks)
-    let s .= '%' . (i + 5) . 'T'
-
-    " the label is made by MyTabLabel()
-    let s .= ' %{MyTabLabel(' . (i + 1) . ')} '
-  endfor
-
-  " after the last tab fill with TabLineFill and reset tab page nr
-  let s .= '%#TabLineFill#%T'
-
-  return s
-endfunction
-
-function! MyTabLabel(n)
-  let buflist = tabpagebuflist(a:n)
-  let winnr = tabpagewinnr(a:n)
-  return bufname(buflist[winnr - 1])
-endfunction
-
-set tabline=%!MyTabLine()
+" Adjust highlighting of matching parenthesis
+hi MatchParen cterm=underline guibg=none guifg=none ctermbg=none ctermfg=none
 
 " Line numbers
 set number
 set relativenumber
 filetype plugin on
+
+" Sign column (linting, git, etc.)
+set signcolumn=yes
+
+" Scroll margins
+set scrolloff=8
 
 " More natural splits
 set splitbelow
@@ -180,40 +172,36 @@ augroup lua
   autocmd FileType lua setlocal colorcolumn=121
 augroup END
 
+highlight Sneak guifg=yellow guibg=black ctermfg=yellow ctermbg=black
+highlight SneakScope guifg=yellow guibg=black ctermfg=yellow ctermbg=black
+
+" NO WRAPPING!!!
+set nowrap
+
+" ...Except when in markdown
+augroup md
+  autocmd FileType md setlocal wrap
+augroup END
+
 " Enable indent guides by default
 if !exists('g:vscode')
   let g:indent_guides_enable_on_vim_startup = 1
 endif
 let g:indent_guides_auto_colors = 0
-autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=#1d1f26   ctermbg=3
+autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=#1d1f26 ctermbg=3
 autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=#272933 ctermbg=4
 
 " Auto-strip trailing whitespace
-function! <SID>StripTrailingWhitespaces()
-    let l = line(".")
-    let c = col(".")
-    %s/\s\+$//e
-    call cursor(l, c)
+fun! TrimWhitespace()
+  let l:save = winsaveview()
+  keeppatterns %s/\s\+$//e
+  call winrestview(l:save)
 endfun
-autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
 
-" FZF delete buffers command
-" function! s:list_buffers()
-"   redir => list
-"   silent ls
-"   redir END
-"   return split(list, "\n")
-" endfunction
-
-" function! s:delete_buffers(lines)
-"   execute 'bwipeout' join(map(a:lines, {_, line -> split(line)[0]}))
-" endfunction
-
-" command! BD call fzf#run(fzf#wrap({
-"   \ 'source': s:list_buffers(),
-"   \ 'sink*': { lines -> s:delete_buffers(lines) },
-"   \ 'options': '--multi --reverse --bind ctrl-a:select-all+accept'
-" \ }))
+augroup RAIGUARD
+  autocmd!
+  autocmd BufWritePre * :call TrimWhitespace()
+augroup END
 
 " Spaces > tabs
 if get(g:, '_has_set_default_indent_settings', 0) == 0
@@ -229,6 +217,29 @@ endif
 " Use treesitter for folding
 " set foldmethod=expr
 " set foldexpr=nvim_treesitter#foldexpr()
+
+set timeoutlen=250
+
+" Persistent undo
+set undofile
+
+" Proper search
+set incsearch
+set ignorecase
+set smartcase
+set gdefault
+
+" Line numbers in netrw
+let g:netrw_bufsettings = 'noma nomod nu nobl nowrap ro'
+" Ignore netrw for alternate file
+let g:netrw_altfile = 1
+
+" No pesky cwd messages
+autocmd VimEnter * silent ! set broadcast=none
+autocmd VimLeave * silent ! set broadcast=all
+
+" Allow moving one over from the end of the line
+set ve+=onemore
 
 " ============================================================
 " KEYBOARD SETTINGS
@@ -250,18 +261,15 @@ inoremap <silent><expr> <c-.> coc#refresh()
 noremap <C-h> <C-w>h
 noremap <C-l> <C-w>l
 
-" Clear search with double search
-noremap // :let @/=""<cr>
+" Clear search
+noremap <leader>/ :let @/=""<cr>
+
+" Search visually selected text
+vnoremap // y/\V<C-R>=escape(@",'/\')<CR><CR>
 
 " Jump to start and end of line using the home row keys
 map H ^
 map L $
-
-" Proper search
-set incsearch
-set ignorecase
-set smartcase
-set gdefault
 
 " Search results centered please
 nnoremap <silent> n nzz
@@ -280,8 +288,8 @@ nnoremap j gj
 nnoremap k gk
 
 " Use `[g` and `]g` to navigate diagnostics
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
+nmap <silent> <leader>cp <Plug>(coc-diagnostic-prev)
+nmap <silent> <leader>cn <Plug>(coc-diagnostic-next)
 
 " GoTo code navigation.
 nmap <silent> gd <Plug>(coc-definition)
@@ -314,8 +322,10 @@ nnoremap <silent> \a  :CocAction<cr>
 " Symbol renaming.
 nmap <leader>rn <Plug>(coc-rename)
 
-" Project wide renaming
-nnoremap <leader>prw :CocSearch <c-r>=expand("<cword>")<cr><cr>
+" Project wide search
+nnoremap <leader>sw :CocSearch <c-r>=expand("<cword>")<cr><cr>
+nnoremap <leader>sl :CocSearch <c-r>0<cr>
+nnoremap <leader>ss :CocSearch<space>
 
 " FZF shortcuts
 " nnoremap <leader>fb :Buffers<cr>
@@ -324,12 +334,11 @@ nnoremap <leader>prw :CocSearch <c-r>=expand("<cword>")<cr><cr>
 " nnoremap <leader>fd :BD<cr>
 
 " " Telescope shortcuts
-nnoremap <leader>ff :Telescope find_files<cr>
 nnoremap <leader>fb :Telescope buffers<cr>
+nnoremap <leader>ff :Telescope git_files<cr>
 nnoremap <leader>fg :Telescope live_grep<cr>
 
 " WhichKey
-set timeoutlen=250
 nnoremap <silent> <leader> :WhichKey ' '<CR>
 " nnoremap <silent> g :WhichKey 'g'<cr>
 
@@ -348,9 +357,9 @@ map F <Plug>Sneak_F
 map t <Plug>Sneak_t
 map T <Plug>Sneak_T
 
-" Git (fugitive, merginal, Flog
+" Git (fugitive, Flog, telescope)
 nmap <leader>gs :G<cr>
-nmap <leader>gb :Merginal<cr>
+nmap <leader>gb :Telescope git_branches<cr>
 nmap <leader>gg :Flog<cr>
 nmap <leader>gc :Gcommit<cr>:sleep 200m<cr><cr>
 nmap <leader>gp :Gpush<cr>
@@ -383,7 +392,6 @@ nnoremap <leader><leader> <c-^>
 " Vimspector
 fun! GotoWindow(id)
   call win_gotoid(a:id)
-  " MaximizerToggle
 endfun
 nnoremap <leader>dd :call vimspector#Launch()<cr>
 nnoremap <leader>dc :call GotoWindow(g:vimspector_session_windows.code)<cr>
@@ -411,8 +419,11 @@ nnoremap <leader>m :MaximizerToggle!<cr>
 " Open new empty buffer
 nnoremap <leader>n :enew<cr>
 
-" fern
-" nnoremap - :Fern .<cr>
+" Undo tree
+nnoremap <leader>u :UndotreeToggle<cr>
+
+" Don't jump to next occurance when searching under word
+nnoremap * *N
 
 " ============================================================
 " OTHER
@@ -422,11 +433,52 @@ require('nvim-treesitter.configs').setup {
   -- Modules and its options go here
   highlight = { enable = true },
   incremental_selection = { enable = true },
-  textobjects = { enable = true },
+  textobjects = {
+    -- enable = true,
+    select = {
+      enable = true,
+      keymaps = {
+        ["af"] = "@function.outer",
+        ["if"] = "@function.inner",
+        ["ac"] = "@class.outer",
+        ["ic"] = "@class.inner"
+      }
+    },
+    swap = {
+      enable = true,
+      swap_next = {
+        ["<leader>a"] = "@parameter.inner",
+      },
+      swap_previous = {
+        ["<leader>A"] = "@parameter.inner",
+      },
+    },
+  },
 }
 local previewers = require('telescope.previewers')
+local putils = require('telescope.previewers.utils')
+local path = require('telescope.path')
+local pfiletype = require('plenary.filetype')
+
+local new_maker = function(filepath, bufnr, bufname, use_ft_detect, callback)
+  if use_ft_detect == nil then use_ft_detect = true end
+  local ft = use_ft_detect and pfiletype.detect(filepath)
+
+  if bufname ~= filepath then
+    path.read_file_async(filepath, vim.schedule_wrap(function(data)
+      vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, vim.split(data, "\r\n"))
+
+      if callback then callback(bufnr) end
+    end))
+  else
+    if callback then callback(bufnr) end
+  end
+
+  putils.highlighter(bufnr, ft)
+end
 require('telescope').setup {
   defaults = {
+    buffer_previewer_maker = new_maker,
     file_previewer = require'telescope.previewers'.vim_buffer_cat.new,
     grep_previewer = require'telescope.previewers'.vim_buffer_vimgrep.new,
     qflist_previewer = require'telescope.previewers'.vim_buffer_qflist.new,
