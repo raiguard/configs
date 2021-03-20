@@ -170,6 +170,3 @@ map global vertical-selection "l" ":vertical-selection-up-and-down" -docstring "
 # ========================================
 # SCRIPTS
 
-# TODO: doesn't work
-source "./scripts/kitty.kak"
-require-module joeconf-kitty
