@@ -1,3 +1,5 @@
+# TODO: change config repository format to use bare repo
+# ref: https://www.atlassian.com/git/tutorials/dotfiles
 # ========================================
 # PLUG.KAK
 
@@ -21,6 +23,7 @@ plug "andreyorst/fzf.kak" # TODO: Doesn't appear to work with kitty
 plug "andreyorst/smarttab.kak"
 plug "caksoylar/kakoune-mysticaltutor"
 plug "crizan/kak-rainbower"
+plug "danr/kakoune-easymotion"
 plug "delapouite/kakoune-buffers"
 plug "delapouite/kakoune-mirror"
 plug "delapouite/kakoune-palette"
@@ -167,3 +170,5 @@ map global vertical-selection "l" ":vertical-selection-up-and-down" -docstring "
 # ========================================
 # SCRIPTS
 
+source "fandt.kak"
+require-module "fandt"
